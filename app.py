@@ -1,12 +1,18 @@
 import re
 import sqlite3
-from flask import Flask, request
+from flask import Flask, request, session
 from twilio.twiml.messaging_response import MessagingResponse
 
 app = Flask(__name__)
+app.secret_key = 'H230186N'  # Set a secret key for session management
 
-# Database initialization
-def init_db(phone_number):
+# Database initialization (only needs to be done once)
+def init_db():
+    # Initialize database for each phone number on the first registration
+    pass
+
+# Initialize database for a specific user
+def init_user_db(phone_number):
     db_name = f"{phone_number}.db"
     conn = sqlite3.connect(db_name)
     c = conn.cursor()
@@ -54,49 +60,60 @@ def webhook():
     response = MessagingResponse()
     msg = response.message()
 
+    # Initialize user database if necessary
+    if not user_exists(sender):
+        init_user_db(sender)
+
     # Check if user exists
     if user_exists(sender):
         if incoming_msg == 'hi':
-            msg.body("Welcome back! Please choose an option:")
-            msg.body("[Today's Schedule], [Tomorrow's Schedule], [My Details]")
+            msg.body("Welcome back! Please choose an option:\n[Todays Schedule], [Tomorrows Schedule], [My Details]")
+        elif incoming_msg == 'todays schedule':
+            # Logic to fetch and send today's schedule
+            msg.body("Here is today's schedule...")
+        elif incoming_msg == 'tomorrows schedule':
+            # Logic to fetch and send tomorrow's schedule
+            msg.body("Here is tomorrow's schedule...")
+        elif incoming_msg == 'my details':
+            # Logic to fetch and send user details
+            msg.body("Here are your details...")
         else:
             msg.body("Invalid input. Type 'hi' to see options.")
     else:
         # New user registration flow
-        if 'step' not in request.session:
-            request.session['step'] = 'start'
+        if 'step' not in session:
+            session['step'] = 'start'
 
-        if request.session['step'] == 'start':
+        if session['step'] == 'start':
             if incoming_msg == 'register':
                 msg.body("Enter your Reg No.")
-                request.session['step'] = 'reg_no'
+                session['step'] = 'reg_no'
             else:
-                msg.body("Welcome to HIT chatbot. Type register to start by registration.")
+                msg.body("Welcome to HIT chatbot. Type 'register' to start registration.")
         
-        elif request.session['step'] == 'reg_no':
+        elif session['step'] == 'reg_no':
             if re.match(r'^H\d{6}[A-Z]$', incoming_msg.upper()):
-                request.session['reg_no'] = incoming_msg.upper()
+                session['reg_no'] = incoming_msg.upper()
                 msg.body("Enter Your Program.")
-                request.session['step'] = 'program'
+                session['step'] = 'program'
             else:
                 msg.body("Invalid Reg No format. Please enter in the format H230186N.")
         
-        elif request.session['step'] == 'program':
+        elif session['step'] == 'program':
             if re.match(r'^[A-Za-z\s]+$', incoming_msg):
-                request.session['program'] = incoming_msg
+                session['program'] = incoming_msg
                 msg.body("Enter your Year.")
-                request.session['step'] = 'year'
+                session['step'] = 'year'
             else:
                 msg.body("Invalid Program. Please enter a valid program name without numbers or special characters.")
         
-        elif request.session['step'] == 'year':
+        elif session['step'] == 'year':
             year = word_to_number(incoming_msg)
             if str(year).isdigit() and 1 <= int(year) <= 5:
                 # Save user details
-                init_db(sender)
-                save_user(sender, request.session['reg_no'], request.session['program'], int(year))
+                save_user(sender, session['reg_no'], session['program'], int(year))
                 msg.body("Registration successful! Type 'hi' to see options.")
-                del request.session['step']
+                session.pop('step', None)  # Clear the session step
             else:
                 msg.body("Invalid Year. Please enter a number between 1 and 5.")
 
