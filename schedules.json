@@ -3,13 +3,13 @@
       "1": {
         "Monday": [
           {
-            "time": "8AM - 10AM",
+            "time": "08:00 AM - 10:00 AM",
             "subject": "Object Oriented in Java",
             "instructor": "Mr. Mkonzvi",
             "room": "Room 12"
           },
           {
-            "time": "10AM - 12PM",
+            "time": "10:00 AM - 12:00 PM",
             "subject": "Data Structures",
             "instructor": "Ms. Smith",
             "room": "Room 15"
@@ -17,13 +17,13 @@
         ],
         "Tuesday": [
           {
-            "time": "8AM - 10AM",
+            "time": "08:00 AM - 10:00 AM",
             "subject": "Algorithms",
             "instructor": "Dr. Johnson",
             "room": "Room 22"
           },
           {
-            "time": "10AM - 12PM",
+            "time": "10: 00 AM - 12:00 PM",
             "subject": "Data Structures",
             "instructor": "Ms. Smith",
             "room": "Room 15"
@@ -33,39 +33,39 @@
       "2": {
         "Friday": [
           {
-            "time": "8AM - 10AM",
+            "time": "11:00 AM - 12:00 PM",
             "subject": "Computer Networks",
             "instructor": "Mr. Brown",
-            "room": "Room 18"
+            "room": "s101"
           },
           {
-            "time": "10AM - 12PM",
+            "time": "10:00 AM - 12:00 PM",
             "subject": "Algorithms",
             "instructor": "Dr. Johnson",
-            "room": "Room 22"
+            "room": "s101"
           },
           {
-            "time": "2PM - 6PM",
+            "time": "10:00 AM - 12:00 PM",
             "subject": "Data Structures",
             "instructor": "Ms. Smith",
-            "room": "Room 15"
+            "room": "s101"
           }
         ],
         "Tuesday": [
           {
-            "time": "8AM - 10AM",
+            "time": "08:00 AM - 10:00 AM",
             "subject": "Technopreneurship",
             "instructor": "Mr. Obert Chahele",
             "room": "Engineering Hall"
           },
           {
-            "time": "10AM - 12PM",
+            "time": "10:00 AM - 12:00 PM",
             "subject": "Software Engineering",
             "instructor": "Mrs. Chibhabha",
             "room": "N109"
           },
           {
-            "time": "2PM - 6PM",
+            "time": "02:00 PM - 06:00 PM",
             "subject": "Ethics and Professionalism",
             "instructor": "Ms. Muteveni",
             "room": "N109"
@@ -77,7 +77,7 @@
       "1": {
         "Monday": [
           {
-            "time": "8AM - 10AM",
+            "time": "08:00 AM - 10:00 AM",
             "subject": "Introduction to IT",
             "instructor": "Ms. Lee",
             "room": "Room 20"
