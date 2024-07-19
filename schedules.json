@@ -1,0 +1,78 @@
+{
+    "computer science": {
+      "1": {
+        "Monday": [
+          {
+            "time": "8AM - 10AM",
+            "subject": "Object Oriented in Java",
+            "instructor": "Mr. Mkonzvi",
+            "room": "Room 12\n"
+          },
+          {
+            "time": "10AM - 12PM",
+            "subject": "Data Structures",
+            "instructor": "Ms. Smith",
+            "room": "Room 15\n"
+          }
+          
+        ],
+        "Tuesday": [
+          {
+            "time": "8AM - 10AM",
+            "subject": "Algorithms",
+            "instructor": "Dr. Johnson",
+            "room": "Room 22\n"
+          },
+          {
+            "time": "10AM - 12PM",
+            "subject": "Data Structures",
+            "instructor": "Ms. Smith",
+            "room": "Room 15\n"
+          }
+         
+        ]
+       
+      },
+      "2": {
+        "Monday": [
+          {
+            "time": "8AM - 10AM",
+            "subject": "Computer Networks",
+            "instructor": "Mr. Brown",
+            "room": "Room 18\n"
+          },{
+            "time": "10AM - 12PM",
+            "subject": "Algorithms",
+            "instructor": "Dr. Johnson",
+            "room": "Room 22\n"
+          },
+          {
+            "time": "14PM - 18PM",
+            "subject": "Data Structures",
+            "instructor": "Ms. Smith",
+            "room": "Room 15\n"
+          }
+          
+        ]
+       
+      }
+    
+    },
+    "Information Technology": {
+      "1": {
+        "Monday": [
+          {
+            "time": "8AM - 10AM",
+            "subject": "Introduction to IT",
+            "instructor": "Ms. Lee",
+            "room": "Room 20"
+          }
+         
+        ]
+       
+      }
+      
+    }
+   
+  }
+  
