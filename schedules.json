@@ -6,57 +6,72 @@
             "time": "8AM - 10AM",
             "subject": "Object Oriented in Java",
             "instructor": "Mr. Mkonzvi",
-            "room": "Room 12\n"
+            "room": "Room 12"
           },
           {
             "time": "10AM - 12PM",
             "subject": "Data Structures",
             "instructor": "Ms. Smith",
-            "room": "Room 15\n"
+            "room": "Room 15"
           }
-          
         ],
         "Tuesday": [
           {
             "time": "8AM - 10AM",
             "subject": "Algorithms",
             "instructor": "Dr. Johnson",
-            "room": "Room 22\n"
+            "room": "Room 22"
           },
           {
             "time": "10AM - 12PM",
             "subject": "Data Structures",
             "instructor": "Ms. Smith",
-            "room": "Room 15\n"
+            "room": "Room 15"
           }
-         
         ]
-       
       },
       "2": {
-        "Monday": [
+        "Friday": [
           {
             "time": "8AM - 10AM",
             "subject": "Computer Networks",
             "instructor": "Mr. Brown",
-            "room": "Room 18\n"
-          },{
+            "room": "Room 18"
+          },
+          {
             "time": "10AM - 12PM",
             "subject": "Algorithms",
             "instructor": "Dr. Johnson",
-            "room": "Room 22\n"
+            "room": "Room 22"
           },
           {
-            "time": "14PM - 18PM",
+            "time": "2PM - 6PM",
             "subject": "Data Structures",
             "instructor": "Ms. Smith",
-            "room": "Room 15\n"
+            "room": "Room 15"
           }
-          
+        ],
+        "Tuesday": [
+          {
+            "time": "8AM - 10AM",
+            "subject": "Technopreneurship",
+            "instructor": "Mr. Obert Chahele",
+            "room": "Engineering Hall"
+          },
+          {
+            "time": "10AM - 12PM",
+            "subject": "Software Engineering",
+            "instructor": "Mrs. Chibhabha",
+            "room": "N109"
+          },
+          {
+            "time": "2PM - 6PM",
+            "subject": "Ethics and Professionalism",
+            "instructor": "Ms. Muteveni",
+            "room": "N109"
+          }
         ]
-       
       }
-    
     },
     "Information Technology": {
       "1": {
@@ -67,12 +82,8 @@
             "instructor": "Ms. Lee",
             "room": "Room 20"
           }
-         
         ]
-       
       }
-      
     }
-   
   }
   

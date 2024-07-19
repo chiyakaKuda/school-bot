@@ -1,6 +1,7 @@
 import re
 import sqlite3
 import json
+import datetime
 from flask import Flask, request, session
 from twilio.twiml.messaging_response import MessagingResponse
 
@@ -69,6 +70,7 @@ def get_user_details(phone_number):
 # Function to get the schedule
 def get_schedule(program, year, day):
     try:
+        program = program.lower()
         schedule_for_day = schedules[program][str(year)][day]
         # Format the schedule into a readable string
         formatted_schedule = f"Today's Schedule:\n" + "\n".join(
@@ -91,17 +93,19 @@ def webhook():
             if incoming_msg == 'hi':
                 msg.body("Welcome back! Please choose an option:\n1. Today's Schedule\n2. Tomorrow's Schedule\n3. My Details")
             elif incoming_msg in ['1', "today's schedule"]:
-                day = "Monday"  # Replace with logic to determine the current day
+                day =datetime.datetime.now().strftime("%A")  # Replace with logic to determine the current day
                 user_details = get_user_details(sender)
                 _, program, year = user_details.split(', ')
                 program = program.split(': ')[1]
                 year = int(year.split(': ')[1])
                 schedule = get_schedule(program, year, day)
-                msg.body(f"Today's Schedule: {schedule}")
+                msg.body(f"{schedule}")
             elif incoming_msg in ['2', "tomorrow's schedule"]:
-                day = "Tuesday"  # Replace with logic to determine the next day
+                # logic to determine the next day
+                tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+                day = tomorrow.strftime("%A") # logic to determine the next day
                 user_details = get_user_details(sender)
-                _, program, year = user_details.split(', ')
+                _, program, year = user_details.split(', ')                                                                                                                                             
                 program = program.split(': ')[1]
                 year = int(year.split(': ')[1])
                 schedule = get_schedule(program, year, day)
@@ -133,7 +137,7 @@ def webhook():
             
             elif session['step'] == 'program':
                 if re.match(r'^[A-Za-z\s]+$', incoming_msg):
-                    session['program'] = incoming_msg
+                    session['program'] = incoming_msg.lower()
                     msg.body("Enter your Year.")
                     session['step'] = 'year'
                 else:
@@ -149,11 +153,12 @@ def webhook():
                     session.pop('step', None)
                 else:
                     msg.body("Invalid Year. Please enter a number between 1 and 5.")
-    except Exception as e:
+    except Exception as e: 
         print(f"An error occurred: {e}")
         msg.body("An error occurred. Please try again later.")
 
     return str(response)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
