@@ -86,44 +86,41 @@ def get_schedule(program, year, day):
 facilities = {
     "classrooms": ["S101", "S102", "S103", "S104", "S105", "S106"]
 }
+rooms = ['s101', 's102', 's103', 's104', 's105', 's106', 'n109', 'room 12', 'room 15', 'room 20', 'room 22', 'engineering hall']
 
-def convert_to_24hr(time_str):
-    try:
-        return datetime.datetime.strptime(time_str, "%I:%M %p").strftime("%H:%M")
-    except Exception as e:
-        print(f"An error occurred in convert_to_24hr: {e}")
-        raise
+def convert_to_24hr(time):
+    return datetime.datetime.strptime(time.strip(), "%I:%M %p").strftime("%H:%M")
 
 def convert_time_format(time_str):
-    try:
-        if "AM" in time_str or "PM" in time_str:
-            if ":" not in time_str:
-                time_str = time_str.replace("AM", ":00 AM").replace("PM", ":00 PM")
-            start_time, end_time = time_str.split(" - ")
-            return convert_to_24hr(start_time), convert_to_24hr(end_time)
-        else:
-            raise ValueError("Time string format is incorrect. Expected format: 'HH:MM AM/PM - HH:MM AM/PM'")
-    except Exception as e:
-        print(f"An error occurred in convert_time_format: {e}")
-        raise
+    start_time, end_time = time_str.split(" - ")
+    return convert_to_24hr(start_time), convert_to_24hr(end_time)
 
-def check_availability(program, year, facility_name):
+def check_availability(facility_name):
     try:
-        current_time = datetime.datetime.now().strftime("%I:%M %p")
+        current_time = datetime.datetime.now().strftime("%H:%M")
         current_day = datetime.datetime.now().strftime("%A")
 
         facility_name = facility_name.lower()
+        availability_info = []
 
-        if program in schedules and str(year) in schedules[program]:
-            day_schedule = schedules[program][str(year)].get(current_day, [])
+        for program in schedules:
+            for year in schedules[program]:
+                day_schedule = schedules[program][year].get(current_day, [])
 
-            for entry in day_schedule:
-                start_time, end_time = convert_time_format(entry['time'])
-                if entry['room'].lower() == facility_name:
-                    if start_time <= convert_to_24hr(current_time) <= end_time:
-                        return f"{facility_name} is currently occupied by {entry['subject']} with {entry['instructor']}."
-            return f"{facility_name} is currently not occupied."
-        return "Facility not found."
+                for entry in day_schedule:
+                    start_time, end_time = convert_time_format(entry['time'])
+                    if entry['room'].lower() == facility_name:
+                        print(
+                            f"Checking {entry['room']} for {entry['subject']} from {start_time} to {end_time} against current time {current_time}")
+                        if start_time <= current_time <= end_time:
+                            availability_info.append(
+                                f"{facility_name.upper()} is currently occupied by {entry['subject']} with {entry['instructor']} for {program} Year {year}.")
+
+        if availability_info:
+            return "\n".join(availability_info)
+        else:
+            return f"{facility_name.upper()} is currently not occupied."
+
     except Exception as e:
         print(f"An error occurred in check_availability: {e}")
         return "An error occurred. Please try again later."
@@ -168,13 +165,10 @@ def webhook():
                 user_details = get_user_details(sender)
                 msg.body(user_details)
             elif incoming_msg == '4':
-                msg.body("Here is a list of the Classrooms at HIT:\n1. S101\n2. S102\n3. S103\n4. S104\n5. S105\n6. S106")
-            elif incoming_msg.startswith('s'):
-                user_details = get_user_details(sender)
-                _, program, year = user_details.split(', ')
-                program = program.split(': ')[1]
-                year = int(year.split(': ')[1])
-                availability = check_availability(program, year, incoming_msg)
+                rooms_list = '\n'.join([f"{i + 1}. {room}" for i, room in enumerate(rooms)])
+                msg.body(f"Here is a list of the Classrooms at HIT:\n{rooms_list}")
+            elif incoming_msg in rooms:
+                availability = check_availability(incoming_msg)
                 msg.body(availability)
             else:
                 msg.body("Invalid input. Type 'hi' to see options.")
