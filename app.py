@@ -4,6 +4,11 @@ import json
 import datetime
 from flask import Flask, request, session
 from twilio.twiml.messaging_response import MessagingResponse
+import smtplib  # for sending feedback via email
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from twilio.rest import Client
+
 
 app = Flask(__name__)
 app.secret_key = 'KDCHIYAKA'
@@ -11,6 +16,20 @@ app.secret_key = 'KDCHIYAKA'
 # Load the schedule from the JSON file
 with open('schedules.json') as f:
     schedules = json.load(f)
+
+# Email Config
+SMTP_SERVER = 'smtp.gmail.com'
+SMTP_PORT = 587
+EMAIL_ADDRESS = 'centurygothic22@gmail.com'
+EMAIL_PASSWORD = 'lhei vosk aqcc vjby'
+MY_EMAIL = 'rootlocalhost04@gmail.com'
+
+#APPP CONFIG
+TWILIO_ACCOUNT_SID = 'AC67c639c49106574238009309b44a3c31'
+TWILIO_AUTH_TOKEN = '50703cac7b225ffda81df269155d5244'
+TWILIO_WHATSAPP_NUMBER = 'whatsapp:++14155238886'
+MY_WHATSAPP_NUMBER = 'whatsapp:+263718083975'
+
 
 # Database initialization
 def init_db(phone_number):
@@ -45,8 +64,36 @@ def save_user(phone_number, reg_no, program, year):
     conn.commit()
     conn.close()
 
-#Dummy Data
+#Sending Feedback:Email Version
+def send_feedback_via_email(feedback):
+    msg = MIMEMultipart()
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = MY_EMAIL
+    msg['Subject'] = "New Feedback Received"
 
+    msg.attach(MIMEText(feedback, 'plain'))
+
+    server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+    server.starttls()
+    server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+    text = msg.as_string()
+    server.sendmail(EMAIL_ADDRESS, MY_EMAIL, text)
+    server.quit()
+
+#Sending by WhatsApp:
+def send_feedback_via_whatsapp(feedback):
+    try:
+        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        message = client.messages.create(
+            body=f"Feedback received:\n{feedback}",
+            from_=TWILIO_WHATSAPP_NUMBER,
+            to=MY_WHATSAPP_NUMBER
+        )
+        return message.sid
+    except Exception as e:
+        print(f"Failed to send WhatsApp message: {e}")
+        return None
+    
 # Convert word numbers to digits
 def word_to_number(word):
     word_dict = {
@@ -139,7 +186,7 @@ def webhook():
         # Check if user exists
         if user_exists(sender):
             if incoming_msg == 'hi':
-                msg.body("Welcome back! Please choose an option:\n1. Today's Schedule\n2. Tomorrow's Schedule\n3. My Details\n4. School Facilities")
+                msg.body("Welcome back! Please choose an option:\n1. Today's Schedule\n2. Tomorrow's Schedule\n3. My Details\n4. School Facilities\n5. Exam Schedule\n6. Upcoming Events\n7. Feedback")
             elif incoming_msg in ['1', "today's schedule"]:
                 day =datetime.datetime.now().strftime("%A")  # Replace with logic to determine the current day
                 user_details = get_user_details(sender)
@@ -166,10 +213,20 @@ def webhook():
                 msg.body(user_details)
             elif incoming_msg == '4':
                 rooms_list = '\n'.join([f"{i + 1}. {room}" for i, room in enumerate(rooms)])
-                msg.body(f"Here is a list of the Classrooms at HIT:\n{rooms_list}")
+                msg.body(f"Here is a list of the Classrooms at HIT:\n{rooms_list}\nType the name of the Classroom to check its occupancy status.")
             elif incoming_msg in rooms:
                 availability = check_availability(incoming_msg)
                 msg.body(availability)
+            elif incoming_msg == '7':
+                msg.body("Please type your feedback.")
+                session['step'] = 'feedback'
+            elif session.get('step') == 'feedback':
+                feedback = incoming_msg
+                # Choose one of the methods to send feedback
+                #send_feedback_via_whatsapp(feedback)  # Send feedback via WhatsApp
+                send_feedback_via_email(feedback)  # Send feedback via Email
+                msg.body("Feedback successfully sent. Thank you!")
+                session.pop('step', None)
             else:
                 msg.body("Invalid input. Type 'hi' to see options.")
             
