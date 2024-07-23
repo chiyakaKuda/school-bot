@@ -19,6 +19,10 @@ with open('schedules.json') as f:
 #Load Events
 with open('events.json') as f:
     events = json.load(f)
+#Load Exams
+with open('exams.json') as f:
+    exams = json.load(f)
+
 # Email Config
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
@@ -132,6 +136,30 @@ def get_upcoming_events():
         return "Upcoming Events:\n" + "\n".join(upcoming_events)
     else:
         return "No upcoming events."
+    
+#Function to Get Exam Schedule
+def get_exam_schedule(phone_number):
+    user_details = get_user_details(phone_number)
+    _, program, year = user_details.split(', ')
+    program = program.split(': ')[1].lower()
+    year = int(year.split(': ')[1])
+    
+    today = datetime.date.today()
+    upcoming_exams = []
+
+    for entry in exams:
+        if entry['program'] == program and entry['year'] == year:
+            for exam in entry['exams']:
+                exam_date = datetime.datetime.strptime(exam['date'], "%Y-%m-%d").date()
+                if exam_date >= today:
+                    formatted_date = exam_date.strftime('%A %d %B %Y')
+                    upcoming_exams.append(f"Course: {exam['course_name']} on {formatted_date} at {exam['time']} in {exam['venue']}")
+
+    if upcoming_exams:
+        return "Upcoming Exams:\n" + "\n".join(upcoming_exams)
+    else:
+        return "No upcoming exams."
+
 # Function to get the schedule
 def get_schedule(program, year, day):
     try:
@@ -233,6 +261,8 @@ def webhook():
             elif incoming_msg in rooms:
                 availability = check_availability(incoming_msg)
                 msg.body(availability)
+            elif incoming_msg in ['5', "exam schedule"]:
+                msg.body(get_exam_schedule(sender))
             elif incoming_msg in ['6', "upcoming events"]:
                 msg.body(get_upcoming_events())
             elif incoming_msg == '7':

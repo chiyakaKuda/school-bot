@@ -1,0 +1,32 @@
+[
+    {
+        "program": "computer science",
+        "year": 1,
+        "exams": [
+            {
+                "date": "2024-07-30",
+                "time": "09:00 AM",
+                "course_name": "Introduction to Programming",
+                "venue": "Room S101"
+            },
+            {
+                "date": "2024-08-02",
+                "time": "01:00 PM",
+                "course_name": "Data Structures",
+                "venue": "Room S102"
+            }
+        ]
+    },
+    {
+        "program": "computer science",
+        "year": 2,
+        "exams": [
+            {
+                "date": "2024-08-05",
+                "time": "10:00 AM",
+                "course_name": "Algorithms",
+                "venue": "Room S103"
+            }
+        ]
+    }
+]
