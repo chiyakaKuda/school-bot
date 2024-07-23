@@ -16,7 +16,9 @@ app.secret_key = 'KDCHIYAKA'
 # Load the schedule from the JSON file
 with open('schedules.json') as f:
     schedules = json.load(f)
-
+#Load Events
+with open('events.json') as f:
+    events = json.load(f)
 # Email Config
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
@@ -115,7 +117,21 @@ def get_user_details(phone_number):
         return f"Reg No: {reg_no}, Program: {program}, Year: {year}"
     else:
         return "User details not found."
-
+# Get Upcoming Events
+def get_upcoming_events():
+    today = datetime.date.today()
+    upcoming_events = []
+    
+    for event in events:
+        event_date = datetime.datetime.strptime(event['date'], "%Y-%m-%d").date()
+        if event_date >= today:
+            formatted_date = event_date.strftime('%A %d %B %Y')  # Format: DayOfWeek Day Month Year
+            upcoming_events.append(f"{event['event_name']} on {formatted_date}")
+    
+    if upcoming_events:
+        return "Upcoming Events:\n" + "\n".join(upcoming_events)
+    else:
+        return "No upcoming events."
 # Function to get the schedule
 def get_schedule(program, year, day):
     try:
@@ -217,6 +233,8 @@ def webhook():
             elif incoming_msg in rooms:
                 availability = check_availability(incoming_msg)
                 msg.body(availability)
+            elif incoming_msg in ['6', "upcoming events"]:
+                msg.body(get_upcoming_events())
             elif incoming_msg == '7':
                 msg.body("Please type your feedback.")
                 session['step'] = 'feedback'
