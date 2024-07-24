@@ -325,8 +325,8 @@ def webhook():
             elif session.get('step') == 'feedback':
                 feedback = incoming_msg
                 # Choose one of the methods to send feedback
-                send_feedback_via_whatsapp(feedback)  # Send feedback via WhatsApp
-                #send_feedback_via_email(feedback)  # Send feedback via Email
+                #send_feedback_via_whatsapp(feedback)  # Send feedback via WhatsApp
+                send_feedback_via_email(feedback)  # Send feedback via Email
                 msg.body("Thanks for the feedback! 💕Our team is now assembling a highly secret committee to review it.🕵️‍♂️")
                 session.pop('step', None)
             else:
