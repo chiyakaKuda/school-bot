@@ -33,7 +33,7 @@ MY_EMAIL = 'rootlocalhost04@gmail.com'
 #APPP CONFIG
 TWILIO_ACCOUNT_SID = 'AC67c639c49106574238009309b44a3c31'
 TWILIO_AUTH_TOKEN = '50703cac7b225ffda81df269155d5244'
-TWILIO_WHATSAPP_NUMBER = 'whatsapp:++14155238886'
+TWILIO_WHATSAPP_NUMBER = 'whatsapp:+14155238886'
 MY_WHATSAPP_NUMBER = 'whatsapp:+263718083975'
 
 
@@ -172,8 +172,23 @@ def get_schedule(program, year, day):
         return formatted_schedule
     except KeyError:
         return "Schedule not found."
+#Updating User Details
+def update_user_details(phone_number, field, value):
+    db_name = f"{phone_number}.db"
+    conn = sqlite3.connect(db_name)
+    c = conn.cursor()
     
-#Data
+    if field == 'reg_no':
+        c.execute("UPDATE student SET RegNo = ? WHERE phonenumber = ?", (value, phone_number))
+    elif field == 'program':
+        c.execute("UPDATE student SET Program = ? WHERE phonenumber = ?", (value, phone_number))
+    elif field == 'year':
+        c.execute("UPDATE student SET Year = ? WHERE phonenumber = ?", (value, phone_number))
+    
+    conn.commit()
+    conn.close()
+
+#Data facilitiess
 facilities = {
     "classrooms": ["S101", "S102", "S103", "S104", "S105", "S106"]
 }
@@ -231,6 +246,51 @@ def webhook():
         if user_exists(sender):
             if incoming_msg == 'hi':
                 msg.body("Welcome back! Please choose an option:\n1. Today's Schedule\n2. Tomorrow's Schedule\n3. My Details\n4. School Facilities\n5. Exam Schedule\n6. Upcoming Events\n7. Feedback")
+            elif incoming_msg in ['3', "my details"]:
+                user_details = get_user_details(sender) + "\nChange something? Type 'update details' to get started!"
+                msg.body(user_details)
+
+            elif incoming_msg == 'update details':
+                msg.body("Which detail would you like to update?\n1. Registration Number\n2. Program\n3. Year\nChoose which detail to update by typing its number!")
+                session['update_step'] = 'choose_update'
+
+            elif session.get('update_step') == 'choose_update':
+                if incoming_msg == '1':
+                    msg.body("Enter your new Registration Number.")
+                    session['update_step'] = 'update_reg_no'
+                elif incoming_msg == '2':
+                    msg.body("Enter your new Program.")
+                    session['update_step'] = 'update_program'
+                elif incoming_msg == '3':
+                    msg.body("Enter your new Year.")
+                    session['update_step'] = 'update_year'
+                else:
+                    msg.body("Looks like your option is on a coffee break. Type 'update details' to find what you can change!.")
+
+            elif session.get('update_step') == 'update_reg_no':
+                if re.match(r'^H\d{6}[A-Z]$', incoming_msg.upper()):
+                    update_user_details(sender, 'reg_no', incoming_msg.upper())
+                    msg.body("our Registration Number is now updated! 🚀 Type 'hi' to explore your refreshed menu!")
+                    session.pop('update_step', None)
+                else:
+                    msg.body("Whoa, that Reg No is a bit off the beaten path. Try entering it as H230186N for the correct format!")
+
+            elif session.get('update_step') == 'update_program':
+                if re.match(r'^[A-Za-z\s]+$', incoming_msg):
+                    update_user_details(sender, 'program', incoming_msg.lower())
+                    msg.body("Your program has been updated! 🎓 Type 'hi' to check out what’s new on your list!")
+                    session.pop('update_step', None)
+                else:
+                    msg.body("Hmm, looks like your program name is in code. Use only letters—no numbers or symbols allowed!")
+
+            elif session.get('update_step') == 'update_year':
+                year = word_to_number(incoming_msg)
+                if str(year).isdigit() and 1 <= int(year) <= 5:
+                    update_user_details(sender, 'year', int(year))
+                    msg.body("You’re now in the right year! 🎓 Type 'hi' to explore your new options!")
+                    session.pop('update_step', None)
+                else:
+                    msg.body("⚠It looks like your year is a bit out of range. Please stick to a number between 1 and 5!")
             elif incoming_msg in ['1', "today's schedule"]:
                 day =datetime.datetime.now().strftime("%A")  # Replace with logic to determine the current day
                 user_details = get_user_details(sender)
@@ -249,12 +309,6 @@ def webhook():
                 year = int(year.split(': ')[1])  
                 schedule = get_schedule(program, year, day)
                 msg.body(f"Tomorrow's Schedule: {schedule}")
-            elif incoming_msg in ['3', 'my details']:
-                user_details = get_user_details(sender)
-                msg.body(user_details)
-            elif incoming_msg in ['3', 'my details']:
-                user_details = get_user_details(sender)
-                msg.body(user_details)
             elif incoming_msg == '4':
                 rooms_list = '\n'.join([f"{i + 1}. {room}" for i, room in enumerate(rooms)])
                 msg.body(f"Here is a list of the Classrooms at HIT:\n{rooms_list}\nType the name of the Classroom to check its occupancy status.")
@@ -271,12 +325,12 @@ def webhook():
             elif session.get('step') == 'feedback':
                 feedback = incoming_msg
                 # Choose one of the methods to send feedback
-                #send_feedback_via_whatsapp(feedback)  # Send feedback via WhatsApp
-                send_feedback_via_email(feedback)  # Send feedback via Email
-                msg.body("Feedback successfully sent. Thank you!")
+                send_feedback_via_whatsapp(feedback)  # Send feedback via WhatsApp
+                #send_feedback_via_email(feedback)  # Send feedback via Email
+                msg.body("Thanks for the feedback! 💕Our team is now assembling a highly secret committee to review it.🕵️‍♂️")
                 session.pop('step', None)
             else:
-                msg.body("Invalid input. Type 'hi' to see options.")
+                msg.body("Oops! We didn’t catch that. Type 'hi' and let’s get you back on the right track!")
             
         else:
             # New user registration flow
@@ -288,7 +342,7 @@ def webhook():
                     msg.body("Enter your Reg No.")
                     session['step'] = 'reg_no' 
                 else:
-                    msg.body("Welcome to HIT chatbot. Type register to start by registration.")
+                    msg.body("Greetings, future HIT graduate! 🌟 Type 'register' and let’s get you officially onboard!")
             
             elif session['step'] == 'reg_no':
                 if re.match(r'^H\d{6}[A-Z]$', incoming_msg.upper()):
@@ -296,7 +350,7 @@ def webhook():
                     msg.body("Enter Your Program.")
                     session['step'] = 'program'
                 else:
-                    msg.body("Invalid Reg No format. Please enter in the format H230186N.")
+                    msg.body("Whoa, that Reg No is a bit off the beaten path. Try entering it as H230186N for the correct format!")
             
             elif session['step'] == 'program':
                 if re.match(r'^[A-Za-z\s]+$', incoming_msg):
@@ -304,7 +358,7 @@ def webhook():
                     msg.body("Enter your Year.")
                     session['step'] = 'year'
                 else:
-                    msg.body("Invalid Program. Please enter a valid program name without numbers or special characters.")
+                    msg.body("Looks like your program name is trying too hard to be unique! Stick to letters only and skip the numbers and special characters.")
             
             elif session['step'] == 'year':
                 year = word_to_number(incoming_msg)
@@ -312,13 +366,13 @@ def webhook():
                     # Save user details
                     init_db(sender)
                     save_user(sender, session['reg_no'], session['program'], int(year))
-                    msg.body("Registration successful! Type 'hi' to see options.")
+                    msg.body("You’re officially registered! Type 'hi' to start your journey of endless possibilities!")
                     session.pop('step', None)
                 else:
-                    msg.body("Invalid Year. Please enter a number between 1 and 5.")
+                    msg.body("⚠It looks like your year is a bit out of range. Please stick to a number between 1 and 5!")
     except Exception as e: 
         print(f"An error occurred: {e}")
-        msg.body("An error occurred. Please try again later.")
+        msg.body("We hit a snag! Looks like our servers took a coffee break. Try again in a bit.")
 
     return str(response)
 
