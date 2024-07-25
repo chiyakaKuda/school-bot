@@ -251,7 +251,7 @@ def webhook():
                 msg.body(user_details)
 
             elif incoming_msg == 'update details':
-                msg.body("Which detail would you like to update?\n1. Registration Number\n2. Program\n3. Year\nChoose which detail to update by typing its number!")
+                msg.body("Which detail would you like to update?\n1. Registration Number\n2. Program\n2. University\n4. Year\nChoose which detail to update by typing its number!Up")
                 session['update_step'] = 'choose_update'
 
             elif session.get('update_step') == 'choose_update':
@@ -264,6 +264,10 @@ def webhook():
                 elif incoming_msg == '3':
                     msg.body("Enter your new Year.")
                     session['update_step'] = 'update_year'
+                elif incoming_msg == '4':
+                    msg.body("Enter your new Year.")
+                    session['update_step'] = 'update_year'
+                
                 else:
                     msg.body("Looks like your option is on a coffee break. Type 'update details' to find what you can change!.")
 

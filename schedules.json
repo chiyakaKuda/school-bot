@@ -1,7 +1,7 @@
  {
     "computer science": {
         "1": {
-            "Monday": [
+            "Wednesday": [
                 {
                     "time": "08:00 AM - 10:00 AM",
                     "subject": "Object Oriented in Java",
@@ -15,7 +15,7 @@
                     "room": "Room 15"
                 }
             ],
-            "Friday": [
+            "Thursday": [
                 {
                     "time": "08:00 AM - 10:00 AM",
                     "subject": "Algorithms",
@@ -24,7 +24,7 @@
                 },
                 {
                     "time": "07:00 PM - 08:00 PM",
-                    "subject": "Data Structures",
+                    "subject": "Ethics and Professionalism",
                     "instructor": "Ms. Smith",
                     "room": "s102"
                 }
@@ -73,16 +73,49 @@
             ]
         }
     },
-    "information technology": {
+    "cybersecurity": {
         "1": {
-            "Friday": [
+            "Wednesday": [
                 {
-                    "time": "07:00 PM - 10:00 PM",
+                    "time": "08:00 AM - 10:00 AM",
+                    "subject": "Introduction to IT",
+                    "instructor": "Ms. Lee",
+                    "room": "s104"
+                },
+                {
+                    "time": "11:00 AM - 01:00 PM",
+                    "subject": "Introduction to IT",
+                    "instructor": "Ms. Lee",
+                    "room": "s103"
+                },
+                {
+                    "time": "02:00 PM - 04:00 PM",
                     "subject": "Introduction to IT",
                     "instructor": "Ms. Lee",
                     "room": "N109"
                 }
+            ],
+            "Thursday": [
+                {
+                    "time": "08:00 AM - 10:00 AM",
+                    "subject": "Introduction to IT",
+                    "instructor": "Ms. Lee",
+                    "room": "N109"
+                },
+                {
+                    "time": "08:00 PM - 10:00 PM",
+                    "subject": "Introduction to IT",
+                    "instructor": "Ms. Lee",
+                    "room": "s101"
+                },
+                {
+                    "time": "10:00 PM - 11:00 PM",
+                    "subject": "Introduction to IT",
+                    "instructor": "Ms. Lee",
+                    "room": "s101"
+                }
             ]
+
         }
     }
 }

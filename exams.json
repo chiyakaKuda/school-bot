@@ -7,24 +7,102 @@
                 "date": "2024-07-30",
                 "time": "09:00 AM",
                 "course_name": "Introduction to Programming",
-                "venue": "Room S101"
+                "venue": "Multipurpose Hall"
             },
             {
                 "date": "2024-08-02",
                 "time": "01:00 PM",
                 "course_name": "Data Structures",
-                "venue": "Room S102"
+                "venue": "Engineering Hall"
+            },
+            {
+                "date": "2024-08-03",
+                "time": "01:00 PM",
+                "course_name": "Technoprenuership",
+                "venue": "Multipurpose Hall"
+            },
+            {
+                "date": "2024-08-04",
+                "time": "01:00 PM",
+                "course_name": "Ethics and Professionalism",
+                "venue": "Multipurpose Hall"
+            },
+            {
+                "date": "2024-08-05",
+                "time": "01:00 PM",
+                "course_name": "Digital Electronics",
+                "venue": "Multipurpose Hall"
+            },
+            {
+                "date": "2024-08-10",
+                "time": "01:00 PM",
+                "course_name": "Analogue Electronics",
+                "venue": "Engineering Hall"
+            },
+            {
+                "date": "2024-08-12",
+                "time": "01:00 PM",
+                "course_name": "Programming Languages",
+                "venue": "Multipurpose Hall"
             }
         ]
     },
     {
-        "program": "computer science",
-        "year": 2,
+        "program": "cybersecurity",
+        "year": 1,
         "exams": [
             {
                 "date": "2024-08-05",
                 "time": "10:00 AM",
                 "course_name": "Algorithms",
+                "venue": "Room S103"
+            },
+            {
+                "date": "2024-08-06",
+                "time": "10:00 AM",
+                "course_name": "Security Systems",
+                "venue": "Room S103"
+            },
+            {
+                "date": "2024-08-07",
+                "time": "10:00 AM",
+                "course_name": "Communications and Networks",
+                "venue": "Room S103"
+            },
+            {
+                "date": "2024-08-08",
+                "time": "10:00 AM",
+                "course_name": "Intro to Programming",
+                "venue": "Room S103"
+            },
+            {
+                "date": "2024-08-10",
+                "time": "10:00 AM",
+                "course_name": "Technoprenuership",
+                "venue": "Room S103"
+            }
+        ]
+    }, 
+    {
+        "program": "software engineering",
+        "year": 2,
+        "exams": [
+            {
+                "date": "2024-08-09",
+                "time": "10:00 AM",
+                "course_name": "Algorithms",
+                "venue": "Room S103"
+            },
+            {
+                "date": "2024-08-08",
+                "time": "10:00 AM",
+                "course_name": "Software Fundamentals",
+                "venue": "Room S103"
+            },
+            {
+                "date": "2024-08-07",
+                "time": "10:00 AM",
+                "course_name": "Intro To OOP",
                 "venue": "Room S103"
             }
         ]
