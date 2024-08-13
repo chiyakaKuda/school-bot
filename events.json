@@ -1,22 +1,6 @@
 [
     {
-        "event_name": "Orientation Day",
-        "date": "2024-08-01"
-    },
-    {
-        "event_name": "Opening Day",
-        "date": "2024-08-05"
-    },
-    {
-        "event_name": "Semester Break",
-        "date": "2024-09-30"
-    },
-    {
-        "event_name": "Graduation",
-        "date": "2024-10-12"
-    },
-    {
-        "event_name": "Exams",
-        "date": "2024-11-05"
-    }
+        "event_name": "Business Plan Competition",
+        "date": "2024-09-04"
+    }   
 ]

@@ -2,12 +2,15 @@ import re
 import sqlite3
 import json
 import datetime
-from flask import Flask, request, session
+import requests
+from flask import Flask, request, session, jsonify
 from twilio.twiml.messaging_response import MessagingResponse
 import smtplib  # for sending feedback via email
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from twilio.rest import Client
+from bs4 import BeautifulSoup
+
 
 
 app = Flask(__name__)
@@ -46,7 +49,27 @@ def init_db(phone_number):
                  (phonenumber TEXT PRIMARY KEY, RegNo TEXT, Program TEXT, Year INTEGER)''')
     conn.commit()
     conn.close()
-
+##Function to scrape th events Website:
+def scrape_school_events():
+    url = "https://www.hit.ac.zw/" # Replace with the actual URL of the events page
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    events = []
+    event_sections = soup.find_all('div', class_='ectbe-inner-wrapper ectbe-simple-event')
+    
+    for event in event_sections:
+        day = event.find('span', class_='ectbe-ev-day').text
+        month = event.find('span', class_='ectbe-ev-mo').text
+        year = event.find('span', class_='ectbe-ev-yr').text
+        title = event.find('div', class_='ectbe-evt-title').text.strip()
+        link = event.find('a', class_='ectbe-evt-url')['href']
+        
+        events.append(f"{title} - {day} {month} {year}\nMore Info: {link}")
+        print(f"Event: {title} on {day}, Link: {link}")
+    
+    return events
+##
 # Check if user exists
 def user_exists(phone_number):
     db_name = f"{phone_number}.db"
@@ -109,6 +132,37 @@ def word_to_number(word):
     return word_dict.get(word.lower(), word)
 
 # Function to get user details
+#Scrap News
+def scrape_news():
+    # URL of the news section
+    url = "https://www.hit.ac.zw/"  # Replace with the correct URL
+
+    # Send a GET request to the website
+    response = requests.get(url)
+
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Find the news articles container
+    news_container = soup.find('div', class_='elementor-posts-container')
+
+    # Extract individual news articles
+    articles = news_container.find_all('article', class_='elementor-post')
+
+    # Prepare the output structure
+    output = "Our News:\n"
+
+    # Iterate through each article and extract the title, excerpt, and link
+    for article in articles:
+        title = article.find('h2', class_='elementor-post__title').get_text(strip=True)
+        excerpt = article.find('div', class_='elementor-post__excerpt').get_text(strip=True)
+        link = article.find('a', class_='elementor-post__read-more')['href']
+        
+        # Append the title, excerpt, and link to the output
+        output += f"{title}\n{excerpt} More News: {link}\n\n"
+
+    return output.strip()
+#Scrap News
 def get_user_details(phone_number):
     db_name = f"{phone_number}.db"
     conn = sqlite3.connect(db_name)
@@ -160,13 +214,41 @@ def get_exam_schedule(phone_number):
     else:
         return "No upcoming exams."
 
+
+
+
+## Function to get notices
+def scrape_notices():
+    url = 'https://www.hit.ac.zw/'  # Replace with the actual URL of the notices page
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    notices = []
+    
+    # Find the notices container
+    notice_container = soup.find('div', class_='elementor-posts-container')
+    
+    # Loop through each notice article
+    articles = notice_container.find_all('article', class_='elementor-post')
+    for article in articles[:3]:  # Limit to top 3 notices
+        title_tag = article.find('h3', class_='elementor-post__title')
+        link_tag = title_tag.find('a')
+        title = link_tag.text.strip()
+        link = link_tag['href']
+        
+        notices.append({'title': title, 'link': link})
+    
+    return notices
+
 # Function to get the schedule
+
+
 def get_schedule(program, year, day):
     try:
         program = program.lower()
         schedule_for_day = schedules[program][str(year)][day]
         # Format the schedule into a readable string
-        formatted_schedule = f"Today's Schedule:\n" + "\n".join(
+        formatted_schedule = f"" + "\n".join(
             [f"{entry['time']}\n{entry['subject']}\n{entry['instructor']}\n{entry['room']}\n" for entry in schedule_for_day]
         )
         return formatted_schedule
@@ -245,7 +327,7 @@ def webhook():
         # Check if user exists
         if user_exists(sender):
             if incoming_msg == 'hi':
-                msg.body("Welcome back! Please choose an option:\n1. Today's Schedule\n2. Tomorrow's Schedule\n3. My Details\n4. School Facilities\n5. Exam Schedule\n6. Upcoming Events\n7. Feedback")
+                msg.body("Welcome back! Please choose an option:\n1. Today's Schedule\n2. Tomorrow's Schedule\n3. My Details\n4. School Facilities\n5. Exam Schedule\n6. Upcoming Events\n7. Our News\n8. Feedback")
             elif incoming_msg in ['3', "my details"]:
                 user_details = get_user_details(sender) + "\nChange something? Type 'update details' to get started!"
                 msg.body(user_details)
@@ -302,7 +384,7 @@ def webhook():
                 program = program.split(': ')[1]
                 year = int(year.split(': ')[1])
                 schedule = get_schedule(program, year, day)
-                msg.body(f"{schedule}")
+                msg.body(f"Today's Schedule{schedule}")
             elif incoming_msg in ['2', "tomorrow's schedule"]:
                 # logic to determine the next day
                 tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -312,7 +394,7 @@ def webhook():
                 program = program.split(': ')[1]
                 year = int(year.split(': ')[1])  
                 schedule = get_schedule(program, year, day)
-                msg.body(f"Tomorrow's Schedule: {schedule}")
+                msg.body(f"Tomorrow's Schedule:\n {schedule}")
             elif incoming_msg == '4':
                 rooms_list = '\n'.join([f"{i + 1}. {room}" for i, room in enumerate(rooms)])
                 msg.body(f"Here is a list of the Classrooms at HIT:\n{rooms_list}\nType the name of the Classroom to check its occupancy status.")
@@ -322,8 +404,18 @@ def webhook():
             elif incoming_msg in ['5', "exam schedule"]:
                 msg.body(get_exam_schedule(sender))
             elif incoming_msg in ['6', "upcoming events"]:
-                msg.body(get_upcoming_events())
+               # msg.body(get_upcoming_events())
+                events = scrape_school_events()
+                if events:
+                    events_message = "\n\n".join(events)
+                    msg.body(f"Here are the upcoming events:\n\n{events_message}")
+                else:
+                    msg.body("Sorry, no events found at the moment.")
+                    msg.body("Send 'Events' to get the latest events from the school website.")
             elif incoming_msg == '7':
+                news = scrape_news()
+                msg.body(news)
+            elif incoming_msg == '8':
                 msg.body("Please type your feedback.")
                 session['step'] = 'feedback'
             elif session.get('step') == 'feedback':
