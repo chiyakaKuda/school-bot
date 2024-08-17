@@ -416,7 +416,7 @@ def webhook():
                 msg.body("Oops! We didn’t catch that. Type 'hi' and let’s get you back on the right track!")
             
         else:
-            # New user registration flow
+#----- -----------------------------------------------New user registration flow--------------------------------------------------------
             if 'step' not in session:
                 session['step'] = 'start'
 
