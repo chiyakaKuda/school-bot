@@ -10,11 +10,25 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from twilio.rest import Client
 from bs4 import BeautifulSoup
+import subprocess
+import os
 
 
 
 app = Flask(__name__)
 app.secret_key = 'KDCHIYAKA'
+
+
+def run():
+    path = "ngrok"
+    port = 5000
+    cmd = [path, "http", str(port)]
+
+    try:
+        subprocess.run(cmd)
+    except KeyboardInterrupt:
+        print("error")
+
 
 # Load the schedules data file
 with open('schedules.json') as f:
@@ -461,4 +475,5 @@ def webhook():
 
 
 if __name__ == '__main__':
+    run()
     app.run(debug=True)
