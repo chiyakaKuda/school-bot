@@ -5,7 +5,7 @@ import datetime
 import requests
 from flask import Flask, request, session, jsonify
 from twilio.twiml.messaging_response import MessagingResponse
-import smtplib
+import smtplib 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from twilio.rest import Client
@@ -20,7 +20,7 @@ app.secret_key = 'KDCHIYAKA'
 
 
 def run():
-    path = "ngrok"
+    path = "ngrok.exe"
     port = 5000
     cmd = [path, "http", str(port)]
 
